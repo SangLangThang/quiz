@@ -90,7 +90,7 @@ next_btn.onclick = () => {
     clearInterval(counterLine); //clear counterLine
     startTimer(timeValue); //calling startTimer function
     startTimerLine(widthValue); //calling startTimerLine function
-    timeText.textContent = "Hết thời gian"; //change the timeText to Time Left
+    timeText.textContent = "Thời gian còn lại"; //change the timeText to Time Left
     next_btn.classList.remove("show"); //hide the next button
     if(que_count === questions.length - 2){
       next_btn.textContent="Hoàn thành"

@@ -15,8 +15,7 @@ body{
     color: #fff;
     background: #007bff;
 }
-
-.start_btn,
+.group_start,
 .info_box,
 .quiz_box,
 .result_box{
@@ -42,6 +41,26 @@ body{
     font-weight: 500;
     color: #007bff;
     padding: 15px 30px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+}
+.group_start{
+    display: flex;
+    column-gap: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+}
+.custom_select{
+    height: 50%;
+    font-size: 15px;
+    font-weight: 500;
+    color: #007bff;
+    padding: 15px 20px;
     outline: none;
     border: none;
     border-radius: 5px;
@@ -145,7 +164,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 145px;
+    width: 220px;
 }
 
 .quiz_box header .timer .time_left_txt{
@@ -229,6 +248,9 @@ section .option_list .option.incorrect{
 
 section .option_list .option.disabled{
     pointer-events: none;
+}
+section .option_list .option span{
+    width: 90%;
 }
 
 section .option_list .option .icon{

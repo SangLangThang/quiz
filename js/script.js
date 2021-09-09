@@ -1,5 +1,6 @@
 //selecting all required elements
 const start_btn = document.querySelector(".start_btn button");
+const select_question=document.querySelector(".custom_select");
 const info_box = document.querySelector(".info_box");
 const exit_btn = info_box.querySelector(".buttons .quit");
 const continue_btn = info_box.querySelector(".buttons .restart");
@@ -11,9 +12,7 @@ const timeText = document.querySelector(".timer .time_left_txt");
 const timeCount = document.querySelector(".timer .timer_sec");
 
 // if startQuiz button clicked
-start_btn.onclick = () => {
-  info_box.classList.add("activeInfo"); //show info box
-};
+
 
 // if exitQuiz button clicked
 exit_btn.onclick = () => {
@@ -24,7 +23,7 @@ exit_btn.onclick = () => {
 continue_btn.onclick = () => {
   info_box.classList.remove("activeInfo"); //hide info box
   quiz_box.classList.add("activeQuiz"); //show quiz box
-  showQuetions(0, "text"); //calling showQestions function
+  showQuetions(0); //calling showQestions function
   queCounter(1); //passing 1 parameter to queCounter
   startTimer(15); //calling startTimer function
   startTimerLine(0); //calling startTimerLine function
@@ -37,6 +36,16 @@ let userScore = 0;
 let counter;
 let counterLine;
 let widthValue = 0;
+let questions;
+
+start_btn.onclick = () => {
+  info_box.classList.add("activeInfo"); //show info box
+  switch(select_question.value){
+    case "1": questions=list_questions.question1; break;
+    case "2": questions=list_questions.question2; break;
+  }
+  
+}; 
 
 const restart_quiz = result_box.querySelector(".buttons .restart");
 const quit_quiz = result_box.querySelector(".buttons .quit");
@@ -70,18 +79,22 @@ const bottom_ques_counter = document.querySelector("footer .total_que");
 
 // if Next Que button clicked
 next_btn.onclick = () => {
+  
   if (que_count < questions.length - 1) {
     //if question count is less than total question length
     que_count++; //increment the que_count value
     que_numb++; //increment the que_numb value
-    showQuetions(que_count, "text"); //calling showQestions function
+    showQuetions(que_count); //calling showQestions function
     queCounter(que_numb); //passing que_numb value to queCounter
     clearInterval(counter); //clear counter
     clearInterval(counterLine); //clear counterLine
     startTimer(timeValue); //calling startTimer function
     startTimerLine(widthValue); //calling startTimerLine function
-    timeText.textContent = "Time Left"; //change the timeText to Time Left
+    timeText.textContent = "Hết thời gian"; //change the timeText to Time Left
     next_btn.classList.remove("show"); //hide the next button
+    if(que_count === questions.length - 2){
+      next_btn.textContent="Hoàn thành"
+    }
   } else {
     clearInterval(counter); //clear counter
     clearInterval(counterLine); //clear counterLine
@@ -90,7 +103,8 @@ next_btn.onclick = () => {
 };
 
 // getting questions and options from array
-function showQuetions(index, type) {
+function showQuetions(index) {
+  
   const que_text = document.querySelector(".que_text");
 
   //creating a new span and div tag for question and option and passing the value using array index
@@ -100,29 +114,15 @@ function showQuetions(index, type) {
     ". " +
     questions[index].question +
     "</span>";
-  let option_tag;
+  let option_tag='';
 
-  if (questions[index].type === "text") {
-    option_tag =
-      '<div class="option"><span>' +
-      questions[index].options[0] +
-      "</span></div>" +
-      '<div class="option"><span>' +
-      questions[index].options[1] +
-      "</span></div>" +
-      '<div class="option"><span>' +
-      questions[index].options[2] +
-      "</span></div>" +
-      '<div class="option"><span>' +
-      questions[index].options[3] +
-      "</span></div>";
-  }
-  if (questions[index].type === "img") {
-    option_tag =
-      `<div class="option"><img class="option-img" src=${questions[index].options[0]}></div>` +
-      `<div class="option"><img class="option-img" src=${questions[index].options[1]}></div>` +
-      `<div class="option"><img class="option-img" src=${questions[index].options[2]}></div>` +
-      `<div class="option"><img class="option-img" src=${questions[index].options[3]}></div>`;
+  for (let i = 0; i < questions[index].options.length; i++) {
+    if (questions[index].type === "text") {
+      option_tag += `<div class="option"><span>${questions[index].options[i]}</span></div>`;
+    }
+    if (questions[index].type === "img") {
+      option_tag += `<div class="option"><img class="option-img" src=${questions[index].options[i]} alt=${questions[index].alt[i]}></div>`;
+    }
   }
 
   que_text.innerHTML = que_tag; //adding new span tag inside que_tag
@@ -143,8 +143,15 @@ let crossIconTag = '<div class="icon cross"><i class="fas fa-times"></i></div>';
 function optionSelected(answer) {
   clearInterval(counter); //clear counter
   clearInterval(counterLine); //clear counterLine
-  let userAns = answer.textContent; //getting user selected option
-  let correcAns = questions[que_count].answer; //getting correct answer from array
+  let userAns;
+  let correcAns = questions[que_count].answer;
+
+  if (questions[que_count].type === "text") {
+    userAns = answer.textContent;
+  } else {
+    userAns = answer.querySelector(".option-img").alt;
+  }
+  //getting correct answer from array
   const allOptions = option_list.children.length; //getting all option items
 
   if (userAns == correcAns) {
@@ -160,11 +167,22 @@ function optionSelected(answer) {
     console.log("Wrong Answer");
 
     for (i = 0; i < allOptions; i++) {
-      if (option_list.children[i].textContent == correcAns) {
-        //if there is an option which is matched to an array answer
-        option_list.children[i].setAttribute("class", "option correct"); //adding green color to matched option
-        option_list.children[i].insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to matched option
-        console.log("Auto selected correct answer.");
+      if (questions[que_count].type === "text") {
+        if (option_list.children[i].textContent == correcAns) {
+          //if there is an option which is matched to an array answer
+          option_list.children[i].setAttribute("class", "option correct"); //adding green color to matched option
+          option_list.children[i].insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to matched option
+          console.log("Auto selected correct answer.");
+        }
+      }
+      if (questions[que_count].type === "img") {
+        let imgAlt = option_list.children[i].querySelector(".option-img").alt;
+        if (imgAlt === correcAns) {
+          //if there is an option which is matched to an array answer
+          option_list.children[i].setAttribute("class", "option correct"); //adding green color to matched option
+          option_list.children[i].insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to matched option
+          console.log("Auto selected correct answer.");
+        }
       }
     }
   }
@@ -183,27 +201,27 @@ function showResult() {
     // if user scored more than 3
     //creating a new span tag and passing the user score number and total question number
     let scoreTag =
-      "<span>and congrats! 🎉, You got <p>" +
+      "<span>và Thật tuyệt! 🎉, Bạn đạt <p>" +
       userScore +
-      "</p> out of <p>" +
+      "</p> trên tổng số <p>" +
       questions.length +
       "</p></span>";
     scoreText.innerHTML = scoreTag; //adding new span tag inside score_Text
   } else if (userScore > 1) {
     // if user scored more than 1
     let scoreTag =
-      "<span>and nice 😎, You got <p>" +
+      "<span>và Chúc mừng 😎, Bạn đạt <p>" +
       userScore +
-      "</p> out of <p>" +
+      "</p> trên tổng số <p>" +
       questions.length +
       "</p></span>";
     scoreText.innerHTML = scoreTag;
   } else {
     // if user scored less than 1
     let scoreTag =
-      "<span>and sorry 😐, You got only <p>" +
+      "<span>và Thật tiếc 😐, Bạn chỉ đạt <p>" +
       userScore +
-      "</p> out of <p>" +
+      "</p> trên tổng số <p>" +
       questions.length +
       "</p></span>";
     scoreText.innerHTML = scoreTag;
@@ -223,7 +241,7 @@ function startTimer(time) {
     if (time < 0) {
       //if timer is less than 0
       clearInterval(counter); //clear counter
-      timeText.textContent = "Time Off"; //change the time text to time off
+      timeText.textContent = "Hêt thời gian"; //change the time text to time off
       const allOptions = option_list.children.length; //getting all option items
       let correcAns = questions[que_count].answer; //getting correct answer from array
       for (i = 0; i < allOptions; i++) {
@@ -259,8 +277,8 @@ function queCounter(index) {
   let totalQueCounTag =
     "<span><p>" +
     index +
-    "</p> of <p>" +
+    "</p> trên <p>" +
     questions.length +
-    "</p> Questions</span>";
+    "</p> Câu hỏi</span>";
   bottom_ques_counter.innerHTML = totalQueCounTag; //adding new span tag inside bottom_ques_counter
 }
